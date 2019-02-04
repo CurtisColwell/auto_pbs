@@ -3,7 +3,7 @@
 The purpose of this repo is to simplify setup and submission of SLURM jobs. This 
 script is currently designed to run SLURM jobs doing [gaussian](http://gaussian.com/running/) 
 or [gamess](https://www.msg.chem.iastate.edu/gamess/) calculations. If you are interested in 
-how the scripts work, see the [README](scripts/README.md) in the scripts section.
+how the scripts work, see the [README](gaussian/scripts/README.md) in the scripts section.
 
 # Installing the script
 
