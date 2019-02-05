@@ -1,0 +1,85 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH -n 28
+
+set -e
+JOB_NAME=${SLURM_JOB_NAME#*/}
+WORKING_DIR=${SLURM_SUBMIT_DIR%/*}
+INPUT_FILE="$WORKING_DIR/input/$JOB_NAME.inp"
+OUTPUT_FILE="$WORKING_DIR/output/$JOB_NAME.out"
+
+setup()
+{
+	if [ -z "$INPUT_FILE" ]; then
+		log_echo "ERROR: Argument representing input file path required."
+		exit
+	fi
+
+	if [ ! -e "$INPUT_FILE" ]; then
+		log_echo "ERROR: The provided input file could not be found."
+		exit
+	fi
+
+	log_echo "This job was started with the following working directory:"
+	log_echo "  $WORKING_DIR"
+
+	# A temporary directory is created to run the calculations in
+	TEMP_DIR=$(mktemp -d)
+	log_echo "Created temp directory on node $SLURM_SUBMIT_HOST to use as local workin directory:"
+	log_echo "  $TEMP_DIR"
+ 
+	cp "$INPUT_FILE" "$TEMP_DIR/"
+
+	log_echo "Contents of temp directory after setup:"
+	ls -l "$TEMP_DIR"
+	echo ""
+}
+
+main()
+{
+	# Perform calculations
+	log_echo "Starting calculations using the following input file:"
+	log_echo "  $TEMP_DIR/$JOB_NAME.inp"
+	cd "$TEMP_DIR"
+	export SCR="$TEMP_DIR"
+	module load gamess-us
+	rungms "$JOB_NAME" 00 $SLURM_NTASKS
+
+	log_echo "Calculations complete!"
+}
+
+teardown()
+{
+	log_echo "Contents of temp directory before teardown:"
+	ls -l "$TEMP_DIR"
+	echo ""
+
+	log_echo "Copying output file to:"
+	log_echo "  $OUTPUT_FILE"
+	copy_existing "$TEMP_DIR/$JOB_NAME.out" "$OUTPUT_FILE"
+	
+	log_echo "Deleting temporary folder and all files within."
+	rm -rf "$TEMP_DIR"
+
+	log_echo "Teardown complete"
+}
+
+copy_existing()
+{
+	if [ -e "$1" ]; then
+		cp -p "$1" "$2"
+	else
+		echo "File not found, will not copy:"
+		echo "	$1"
+	fi
+}
+
+log_echo()
+{
+	DATE="$(date +"%Y-%m-%d %T")"
+	echo "[$DATE] $1"
+}
+
+trap teardown EXIT
+setup
+main
