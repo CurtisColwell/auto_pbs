@@ -68,7 +68,7 @@ check_for_jobs()
 	num_jobs=0
 	for input_name in "${INPUT_NAMES[@]}"; do
 		if [ ! -e "$OUTPUT_DIR/$input_name.out" ]; then
-			if submit_job "$INPUT_DIR/$input_name.inp"; then
+			if submit_job "$INPUT_DIR/$input_name.com"; then
 				num_jobs=$((num_jobs + 1))
 			fi
 		fi

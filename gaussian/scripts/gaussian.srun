@@ -5,7 +5,7 @@
 set -e
 JOB_NAME=${SLURM_JOB_NAME#*/}
 WORKING_DIR=${SLURM_SUBMIT_DIR%/*}
-INPUT_FILE="$WORKING_DIR/input/$JOB_NAME.inp"
+INPUT_FILE="$WORKING_DIR/input/$JOB_NAME.com"
 OUTPUT_FILE="$WORKING_DIR/output/$JOB_NAME.out"
 CHECKPOINT_FILE="$WORKING_DIR/output/$JOB_NAME.chk"
 FORMATTED_FILE="$WORKING_DIR/output/$JOB_NAME.fchk"
@@ -38,7 +38,7 @@ setup()
 
 	# Input file, add the checkpoint file command after copying
 	cp "$INPUT_FILE" "$TEMP_DIR/"
-	sed -i '1i%Chk=checkpoint.chk' "$TEMP_DIR/$JOB_NAME.inp"
+	sed -i '1i%Chk=checkpoint.chk' "$TEMP_DIR/$JOB_NAME.com"
 
 	log_echo "Contents of temp directory after setup:"
 	ls -l "$TEMP_DIR"
@@ -49,11 +49,11 @@ main()
 {
 	# Perform calculations
 	log_echo "Starting calculations using the following input file:"
-	log_echo "  $TEMP_DIR/$JOB_NAME.inp"
+	log_echo "  $TEMP_DIR/$JOB_NAME.com"
 	cd "$TEMP_DIR"
 	export GAUSS_SCRDIR="$TEMP_DIR"
 	module load gaussian
-	g09 < "$TEMP_DIR/$JOB_NAME.inp" > "$TEMP_DIR/$JOB_NAME.out"
+	g09 < "$TEMP_DIR/$JOB_NAME.com" > "$TEMP_DIR/$JOB_NAME.out"
 
 	log_echo "Generating formatted checkpoint file:"
 	log_echo "  $TEMP_DIR/checkpoint.fchk"
@@ -68,10 +68,6 @@ teardown()
 	log_echo "Contents of temp directory before teardown:"
 	ls -l "$TEMP_DIR"
 	echo ""
-
-	log_echo "Copying checkpoint file to:"
-	log_echo "  $CHECKPOINT_FILE"
-	copy_existing "$TEMP_DIR/checkpoint.chk" "$CHECKPOINT_FILE"
 
 	log_echo "Copying output file to:"
 	log_echo "  $OUTPUT_FILE"
