@@ -15,7 +15,7 @@ git clone https://github.com/CurtisColwell/auto_slurm.git
 
 # Running the script
 
-For gaussian, simply place gaussian input (.inp) files in the `auto_slurm/gaussian/input/` 
+For gaussian, simply place gaussian input (.com) files in the `auto_slurm/gaussian/input/` 
 directory and run the script using the following command.
 ```
 bash auto_slurm/gaussian/scripts/submit_gaussian.bash
