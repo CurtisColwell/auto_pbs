@@ -8,6 +8,14 @@ OUTPUT_DIR="$WORKING_DIR/output"
 LOG_DIR="$WORKING_DIR/logs"
 
 main() {
+	if [ -z $GROUP_NAME ]; then
+		echo "Please input group name for submissions"
+		read GROUP_NAME
+		echo "export GROUP_NAME=$GROUP_NAME" >> ~/.bashrc;
+	fi
+
+	echo "Submitting under group name $GROUP_NAME"
+
 	if [ ! -d "$INPUT_DIR" ]; then
 		echo "No input file directory found."
 		echo "Users must place their input files in the auto_slurm/input/ directory."
@@ -105,7 +113,7 @@ submit_job()
 	echo "Submitting job named $JOB_NAME"
 
 	# Call the job script with the given arguments
-	sbatch --job-name="$JOB_NAME" --output="$LOG_DIR/$JOB_NAME.log" --partition=$PARTITION "$SCRIPTS_DIR/gaussian.srun"
+	sbatch --job-name="$JOB_NAME" --output="$LOG_DIR/$JOB_NAME.log" --partition=$PARTITION --account=$GROUP_NAME "$SCRIPTS_DIR/gaussian.srun"
 }
 
 main "$@"
