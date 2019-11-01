@@ -28,9 +28,6 @@ main() {
 
 	read_args "$@"
 
-	if [ -z "$ARG_NO_UPDATE" ]; then
-		update_repo
-	fi
 	check_for_jobs
 }
 
@@ -46,16 +43,6 @@ read_args()
 				PARTITION="$arg";;
 		esac
 	done
-}
-
-update_repo() {
-	cd "$SCRIPTS_DIR"
-	git checkout -q master
-	PULL_RESULT=$(git pull)
-	if [ ! "$PULL_RESULT" == "Already up-to-date." ]; then
-		echo "Scripts have been updated, please run the script again."
-		exit
-	fi
 }
 
 check_for_jobs()
