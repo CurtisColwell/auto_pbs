@@ -68,15 +68,14 @@ check_for_jobs()
 	while IFS=  read -r -d $'\0'; do
 		# Remove the leading .
 		INPUT_NAME=${REPLY##*/}
-		INPUT_NAME=${INPUT_NAME%.*}
 		INPUT_NAMES+=("$INPUT_NAME")
 	done < <(find . -type f -print0)
 
 	# Submit new job if input file has no corresponding output file
 	num_jobs=0
 	for input_name in "${INPUT_NAMES[@]}"; do
-		if [ ! -e "$OUTPUT_DIR/$input_name.out" ]; then
-			if submit_job "$INPUT_DIR/$input_name.com"; then
+		if [ ! -e "$OUTPUT_DIR/${input_name%.*}.out" ]; then
+			if submit_job "$INPUT_DIR/$input_name"; then
 				num_jobs=$((num_jobs + 1))
 			fi
 		fi
@@ -95,7 +94,6 @@ submit_job()
 	INPUT_FILE="$1"
 
 	JOB_NAME=${INPUT_FILE##*/}
-	JOB_NAME=${JOB_NAME%.*}
 
 	# Check if input file exists
 	if [ ! -e "$INPUT_FILE" ]; then
@@ -105,15 +103,15 @@ submit_job()
 	fi
 
 	# Check if job already exists
-	if squeue -u $USER | grep -n "$JOB_NAME"; then
-		echo "A job named $JOB_NAME is already in the queue."
+	if squeue -u $USER | grep -n "${JOB_NAME%.*}"; then
+		echo "A job named ${JOB_NAME%.*} is already in the queue."
 		return 1
 	fi
 
-	echo "Submitting job named $JOB_NAME"
+	echo "Submitting job named ${JOB_NAME%.*}"
 
 	# Call the job script with the given arguments
-	sbatch --job-name="$JOB_NAME" --output="$LOG_DIR/$JOB_NAME.log" --partition=$PARTITION --account=$GROUP_NAME "$SCRIPTS_DIR/gaussian.srun"
+	sbatch --export=JOB_NAME=$JOB_NAME --job-name="${JOB_NAME%.*}" --output="$LOG_DIR/${JOB_NAME%.*}.log" --partition=$PARTITION --account=$GROUP_NAME "$SCRIPTS_DIR/gaussian.srun"
 }
 
 main "$@"
