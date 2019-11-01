@@ -35,6 +35,16 @@ main() {
 	check_for_jobs
 }
 
+update_repo() {
+	cd "$SCRIPTS_DIR"
+	git checkout -q master
+	PULL_RESULT=$(git pull)
+	if [ ! "$PULL_RESULT" == "Already up-to-date." ]; then
+		echo "Scripts have been updated, please run the script again."
+		exit
+	fi
+}
+
 read_args()
 {
 	ARG_NO_UPDATE=
