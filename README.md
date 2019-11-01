@@ -32,6 +32,12 @@ with "gamess". Gamess does not generate checkpoint, formatted checkpoint, or
 log files. The text normally generated in the log file for gaussian submissions 
 instead appears at the beginning and end of the output file.
 
+### Running orca
+
+Follow the instructions for gaussian, but replace every mention of "gaussian" 
+with "orca". Orca generates a gbw file, property file, and property text file 
+with the output file. 
+
 ### Running on different nodes
 
 If your job needs more time, you can run on a different node. The default node is 'short' 
