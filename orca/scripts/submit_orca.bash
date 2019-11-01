@@ -5,6 +5,7 @@ SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKING_DIR=$(dirname "$SCRIPTS_DIR")
 INPUT_DIR="$WORKING_DIR/input"
 OUTPUT_DIR="$WORKING_DIR/output"
+LOG_DIR="$WORKING_DIR/logs"
 
 main() {
 	if [ -z $GROUP_NAME ]; then
@@ -23,12 +24,10 @@ main() {
 
 	# Setup folders if they don't already exist
 	mkdir -p "$OUTPUT_DIR"
+	mkdir -p "$LOG_DIR"
 
 	read_args "$@"
 
-	if [ -z "$ARG_NO_UPDATE" ]; then
-		update_repo
-	fi
 	check_for_jobs
 }
 
@@ -44,16 +43,6 @@ read_args()
 				PARTITION="$arg";;
 		esac
 	done
-}
-
-update_repo() {
-	cd "$SCRIPTS_DIR"
-	git checkout -q master
-	PULL_RESULT=$(git pull)
-	if [ ! "$PULL_RESULT" == "Already up-to-date." ]; then
-		echo "Scripts have been updated, please run the script again."
-		exit
-	fi
 }
 
 check_for_jobs()
@@ -111,7 +100,7 @@ submit_job()
 	echo "Submitting job named $JOB_NAME"
 
 	# Call the job script with the given arguments
-	sbatch --job-name="$JOB_NAME" --output="$OUTPUT_DIR/$JOB_NAME.out" --partition=$PARTITION --account=$GROUP_NAME "$SCRIPTS_DIR/orca.srun"
+	sbatch --job-name="$JOB_NAME" --output="$LOG_DIR/$JOB_NAME.log" --partition=$PARTITION --account=$GROUP_NAME "$SCRIPTS_DIR/orca.srun"
 }
 
 main "$@"
