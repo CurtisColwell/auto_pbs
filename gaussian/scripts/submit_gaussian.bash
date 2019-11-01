@@ -28,6 +28,10 @@ main() {
 
 	read_args "$@"
 
+	if [ -z "$ARG_NO_UPDATE" ]; then
+		update_repo
+	fi
+
 	check_for_jobs
 }
 
