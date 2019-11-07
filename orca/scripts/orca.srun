@@ -46,7 +46,7 @@ main()
 	cd "$TEMP_DIR"
 	export SCR="$TEMP_DIR"
 	module load orca
-	orca "$JOB_NAME.inp" > "$JOB_NAME.out"
+	$(command -v orca) "$JOB_NAME.inp" > "$JOB_NAME.out"
 
 	log_echo "Calculations complete!"
 }
