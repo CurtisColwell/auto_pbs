@@ -103,7 +103,8 @@ submit_job()
 	fi
 
 	# Check if job already exists
-	if squeue -u $USER | grep -n "$JOB_NAME"; then
+  QUEUE_NAME=${JOB_NAME%.*}
+	if squeue -u $USER | grep -n "${QUEUE_NAME:0:8}"; then
 		echo "A job named $JOB_NAME is already in the queue."
 		return 1
 	fi
