@@ -52,12 +52,12 @@ main()
 	cd "$TEMP_DIR"
 	export GAUSS_SCRDIR="$TEMP_DIR"
 	module load gaussian
-	g09 < "$TEMP_DIR/$JOB_NAME" > "$TEMP_DIR/${JOB_NAME%.*}.out"
+	g09 < "$TEMP_DIR/$JOB_NAME" > "$TEMP_DIR/${JOB_NAME%.*}.out" || cp "checkpoint.chk" $CHECKPOINT_FILE
 
 	log_echo "Generating formatted checkpoint file:"
 	log_echo "  $TEMP_DIR/checkpoint.fchk"
 
-	formchk "checkpoint.chk" "checkpoint.fchk"
+	formchk "checkpoint.chk" "checkpoint.fchk" 
 
 	log_echo "Calculations complete!"
 }
