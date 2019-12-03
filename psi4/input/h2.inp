@@ -1,0 +1,10 @@
+memory 600 mb
+
+molecule H2 {
+	H 0.0 0.0 0.0
+	H 1.0 0.0 0.0
+}
+
+set basis STO-3G
+energy('scf')
+
